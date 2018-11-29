@@ -2,30 +2,38 @@ var webpack = require('webpack')
 var path = require('path')
 var ExtractTextWebpackPlugin = require('extract-text-webpack-plugin')
 var CleanWebpackPlugin  = require('clean-webpack-plugin')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
     entry:{
         app:'./main.js',
     },
     output:{
         path:path.resolve(__dirname,'./dist'),
-        publicPath:'./dist/', // 配置按需加载或静态资源（如js、图片、css）等的公共路径
+        publicPath:'../dist/', // 配置按需加载或静态资源（如js、图片、css）等的公共路径
         filename:'[name].bundle.js',
         chunkFilename:'[name].chunk.js'
+    },
+    devServer:{
+        port:9001,
+        inline:true,
+        historyApiFallback:true,
+        hot:true
     },
     module:{
         rules:[
             {
                 test:/\.css$/,
                 use: ExtractTextWebpackPlugin.extract({
-                    fallback: {
+                    fallback: {//编译后应该使用什么插件来处理css文件
                       loader: 'style-loader'
                     },
                     use:[
-                      {
+                      {//用什么插件来编译css文件
                         loader: 'css-loader'
                       }
                     ]
-                  })
+                  }),
+                  exclude:/node_modules/
             },
             {
                 test:/\.(png|jpg|jpeg|gif)$/,
@@ -34,7 +42,7 @@ module.exports = {
                     loader:'url-loader',
                     options:{
                         limit:'15000',
-                        name:'./dist/img/[hash:8].[ext]'
+                        name:'img/[hash:8].[ext]'
                     }
                     }
                 ]
@@ -46,6 +54,12 @@ module.exports = {
             filename:'[name].min.css'
         }),
         //删掉之前打包的文件
-        new CleanWebpackPlugin('./dist')
+        new CleanWebpackPlugin('./dist'),
+
+        new HtmlWebpackPlugin({
+            title: "处理静态资源",
+            hash:true,
+            template: './index.html',
+        })
     ]
 }
