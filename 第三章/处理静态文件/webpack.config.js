@@ -17,7 +17,13 @@ module.exports = {
         port:9001,
         inline:true,
         historyApiFallback:true,
-        hot:true
+        hot:true,
+        proxy:{
+            '/text':{
+                target:'https://www.toutiao.com/2/wap/search/extra/pc_hot_search/',
+                secure:false
+            }
+        }
     },
     module:{
         rules:[
