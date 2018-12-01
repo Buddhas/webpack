@@ -9,20 +9,28 @@ module.exports = {
     },
     output:{
         path:path.resolve(__dirname,'./dist'),
-        publicPath:'../dist/', // 配置按需加载或静态资源（如js、图片、css）等的公共路径
-        filename:'[name].bundle.js',
-        chunkFilename:'[name].chunk.js'
+        // publicPath:'/dist/', // 配置按需加载或静态资源（如js、图片、css）等的公共路径
+        filename:'js/[name].bundle.js',
+        chunkFilename:'js/[name].chunk.js'
     },
     devServer:{
+        // contentBase: path.join(__dirname, "./dist"),
         port:9001,
         inline:true,
         historyApiFallback:true,
-        hot:true,
         proxy:{
-            '/text':{
-                target:'https://www.toutiao.com/2/wap/search/extra/pc_hot_search/',
-                secure:false
-            }
+            '/api': {
+                target: 'http://localhost:8087',    
+                pathRewrite: { '^/api': '' },
+                changeOrigin: true,
+                secure: false, // 接受 运行在 https 上的服务
+              },
+              '/toutiao': {
+                target: 'https://www.toutiao.com/api/pc/focus/',    
+                pathRewrite: { '^/toutiao': '' },
+                changeOrigin: true,//本地会虚拟一个服务端接收你的请求并代你发送该请求
+                secure: false, // 接受 运行在 https 上的服务
+              }
         }
     },
     module:{
@@ -48,7 +56,8 @@ module.exports = {
                     loader:'url-loader',
                     options:{
                         limit:'15000',
-                        name:'img/[hash:8].[ext]'
+                        name:'img/[hash:8].[ext]',
+                        publicPath:'../'
                     }
                     }
                 ]
@@ -57,7 +66,7 @@ module.exports = {
     },
     plugins:[
         new ExtractTextWebpackPlugin({
-            filename:'[name].min.css'
+            filename:'css/[name].min.css'
         }),
         //删掉之前打包的文件
         new CleanWebpackPlugin('./dist'),
