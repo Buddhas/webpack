@@ -1,8 +1,8 @@
 li {
   width: 200px;
   height: 200px;
-  float: left
-
+  float: left;
+  display: flex;  
 }
 .bg1 {
   background: url(../img/01.jpg)

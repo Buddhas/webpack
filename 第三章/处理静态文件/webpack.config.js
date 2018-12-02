@@ -6,6 +6,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
     entry:{
         app:'./main.js',
+        vendor:['jquery']
     },
     output:{
         path:path.resolve(__dirname,'./dist'),
@@ -44,6 +45,17 @@ module.exports = {
                     use:[
                       {//用什么插件来编译css文件
                         loader: 'css-loader'
+                      },
+                      {
+                        loader: 'postcss-loader',
+                        options: {
+                          ident: 'postcss',
+                          plugins:[
+                            require('autoprefixer')({
+                                browsers:['last 5 versions']
+                            })
+                          ] 
+                        }
                       }
                     ]
                   }),
@@ -65,6 +77,7 @@ module.exports = {
         ]
     },
     plugins:[
+        
         new ExtractTextWebpackPlugin({
             filename:'css/[name].min.css'
         }),
@@ -75,6 +88,16 @@ module.exports = {
             title: "处理静态资源",
             hash:true,
             template: './index.html',
-        })
+        }),
+         // vendor第三方引入包生成代码,manifest是webpack生成代码
+         new webpack.optimize.CommonsChunkPlugin({
+            names:['vendor','manifest'],
+            minChunks:Infinity
+        }),
+        //业务公用代码
+        new webpack.optimize.CommonsChunkPlugin({
+            name:'common',
+            minChunks:2
+        }),
     ]
 }
